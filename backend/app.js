@@ -1,7 +1,12 @@
 import express from 'express';
-const port = 5000
+import dotenv from 'dotenv'
+import connectDB from './config/db.js';
+dotenv.config();
 
 
+
+connectDB()
+const port = process.env.PORT || 5000;
 const app = express();
 
 app.get('/', (req,res)=> res. send ('Server is Running'))
