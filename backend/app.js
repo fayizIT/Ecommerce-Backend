@@ -10,6 +10,12 @@ import connectDB from './config/db.js';
 
 dotenv.config();
 
+// Check if MongoDB URI is defined
+if (!process.env.MONGO_URI) {
+    console.error('MongoDB URI is not defined.');
+    process.exit(1);
+}
+
 
 
 
