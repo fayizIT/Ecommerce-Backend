@@ -12,7 +12,7 @@ const generateAdminResponse = (res, admin) => {
     });
 };
 
-// Admin login
+// Admin  for login
 const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -26,7 +26,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     }
 });
 
-// Register Admin
+// Register  for Admin
 const registerAdmin = asyncHandler(async (req, res) => {
     const { name, email, password, key } = req.body;
 
@@ -58,7 +58,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
     }
 });
 
-// Logout Admin
+// Logout for Admin
 const logoutAdmin = asyncHandler(async (req, res) => {
     res.cookie('adminJwt', '', {
         httpOnly: true,
@@ -67,7 +67,7 @@ const logoutAdmin = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Logged out' });
 });
 
-
+//add product by Admin side
 const addProduct = asyncHandler(async (req, res) => {
     const { name, category, description, price } = req.body;
     
@@ -101,7 +101,7 @@ const addProduct = asyncHandler(async (req, res) => {
       }
 });
 
-
+//unlist the current products by Admin side
 const unlistProduct = asyncHandler(async (req, res) => {
     const productId = req.params.productId;
   
@@ -124,7 +124,7 @@ const unlistProduct = asyncHandler(async (req, res) => {
     }
 });
 
-
+//list the current products by Admin side
 const listProduct = asyncHandler(async (req, res) => {
     const productId = req.params.productId;
   
@@ -147,6 +147,7 @@ const listProduct = asyncHandler(async (req, res) => {
     }
 });
 
+// update the products details by Admin side
 const updateProduct = asyncHandler(async (req, res) => {
     
     const { productId, name, category, description, price } = req.body;
