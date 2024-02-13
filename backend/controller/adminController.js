@@ -1,5 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Admin from '../models/adminModel.js';
+import Product from "../models/productModel.js";
+import generateTokenAdmin from "../utils/generateTokenAdmin.js";
 
 const generateAdminResponse = (res, admin) => {
     generateTokenAdmin(res, admin._id);
@@ -145,4 +147,68 @@ const listProduct = asyncHandler(async (req, res) => {
     }
 });
 
-export { loginAdmin, registerAdmin, logoutAdmin, addProduct, unlistProduct, listProduct };
+const updateProduct = asyncHandler(async (req, res) => {
+    
+    const { productId, name, category, description, price } = req.body;
+
+    console.log(name, category, description, price, productId);
+  
+    // Check if productId is provided
+    if (!productId) {
+      return res.status(400).json({ error: 'Product ID is required' });
+    }
+  
+    try {
+      // Find the existing product by ID
+      const existingProduct = await Product.findById(productId);
+
+      if (!existingProduct) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+  
+      // Update fields only if they are provided in the request
+      if (name) existingProduct.name = name;
+      if (category) existingProduct.category = category;
+      if (description) existingProduct.description = description;
+      if (price) existingProduct.price = price;
+  
+      // Check if a new file is provided
+      if (req.file) {
+        // If a new file is provided, update the image
+        existingProduct.image = req.file.filename;
+      }
+
+      console.log(existingProduct, 'updated product');
+  
+      // Save the updated product to the database
+      const updatedProduct = await existingProduct.save();
+  
+      // Respond with the updated product details
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error while updating product' });
+    }
+});
+
+
+const getAllProducts = asyncHandler(async (req, res) => {
+    try {
+        const products = await Product.find({});
+        
+        if (products && products.length > 0) {
+            res.status(200).json(products);
+        } else {
+            // Change status code to 204 (No Content) when there are no products
+            res.status(204).json({ message: 'No products found' });
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
+export { loginAdmin, registerAdmin, logoutAdmin, addProduct, unlistProduct, listProduct, updateProduct, getAllProducts };

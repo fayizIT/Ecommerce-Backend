@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from "multer";
 import path from "path";
-import { registerAdmin, loginAdmin, logoutAdmin,addProduct,unlistProduct,listProduct } from '../controller/adminController.js';
+import { registerAdmin, loginAdmin, logoutAdmin,addProduct,unlistProduct,listProduct,getAllProducts,updateProduct } from '../controller/adminController.js';
 const router = express.Router();
 
 
@@ -45,6 +45,8 @@ router.post('/add-product', adminProtect, upload.single('file'), (req, res, next
   }, addProduct);
   router.get('/unlist-product/:productId',adminProtect, unlistProduct)
 router.get('/list-product/:productId',adminProtect, listProduct)
+router.put('/update-product',adminProtect,updateProduct)
+router.get('/getAll-products',adminProtect,getAllProducts)
 
 
 
