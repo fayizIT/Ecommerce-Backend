@@ -1,7 +1,8 @@
 import express from 'express';
 import multer from "multer";
 import path from "path";
-import { registerAdmin, loginAdmin, logoutAdmin, } from '../controller/adminController.js';
+import { registerAdmin, loginAdmin, logoutAdmin,addProduct,unlistProduct,listProduct } from '../controller/adminController.js';
+const router = express.Router();
 
 
 import { adminProtect } from '../middleware/adminAuthMiddleware.js';
@@ -42,6 +43,8 @@ router.post('/add-product', adminProtect, upload.single('file'), (req, res, next
     }
     next();
   }, addProduct);
+  router.get('/unlist-product/:productId',adminProtect, unlistProduct)
+router.get('/list-product/:productId',adminProtect, listProduct)
 
 
 

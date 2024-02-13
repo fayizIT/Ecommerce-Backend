@@ -65,4 +65,84 @@ const logoutAdmin = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Logged out' });
 });
 
-export { loginAdmin, registerAdmin, logoutAdmin };
+
+const addProduct = asyncHandler(async (req, res) => {
+    const { name, category, description, price } = req.body;
+    
+    
+    const productImage = req.file ? req.file.filename : null;
+
+    if (!productImage) {
+        return res.status(400).json({ error: 'Image is required.' });
+    }
+    
+    const newProduct = new Product({
+        name,
+        category,
+        image: productImage,
+        price,
+        description,
+    });
+    try {
+      const savedProduct = await newProduct.save();
+        // Save the new product to the database
+        res.status(201).json(savedProduct);
+      } catch (error) {
+          if (error.name === 'ValidationError') {
+              // Handle validation errors
+              return res.status(400).json({ error: error.message });
+          }
+      
+          // Handle other types of errors
+          console.error('Error in addProduct:', error);
+          res.status(500).json({ error: 'Internal Server Error' });
+      }
+});
+
+
+const unlistProduct = asyncHandler(async (req, res) => {
+    const productId = req.params.productId;
+  
+    try {
+      // Find the product by ID and update the unlist field to true
+      const product = await Product.findByIdAndUpdate(
+        productId,
+        { $set: { unlist: true } },
+        { new: true }
+      );
+  
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+  
+      res.status(200).json({ message: 'Product unlisted successfully', product });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+const listProduct = asyncHandler(async (req, res) => {
+    const productId = req.params.productId;
+  
+    try {
+      // Find the product by ID and update the unlist field to true
+      const product = await Product.findByIdAndUpdate(
+        productId,
+        { $set: { unlist: false } },
+        { new: true }
+      );
+  
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+  
+      res.status(200).json({ message: 'Product listed successfully', product });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+export { loginAdmin, registerAdmin, logoutAdmin, addProduct, unlistProduct, listProduct };
