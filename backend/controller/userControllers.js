@@ -203,6 +203,52 @@ const retrieveCartDetails = asyncHandler(async (req, res) => {
 });
 
 
+const updateQuantity = asyncHandler(async (req, res) => {
+  try {
+      const { count, productId } = req.body;
+
+      const userId = req.user._id;
+
+      const cart = await Cart.findOne({
+          user_id: userId,
+          "products.productId": productId,
+      });
+
+      if (!cart) {
+          return res.status(404).json({ error: "Product not found in the cart" });
+      }
+
+      // Finding the index of the product in the products array
+      const productIndex = cart.products.findIndex(
+          (product) => product.productId.toString() === productId
+      );
+
+      if (productIndex === -1) {
+          return res.status(404).json({ error: "Product not found in the cart" });
+      }
+
+      // Updating the quantity based on the count provided
+      const newQuantity = cart.products[productIndex].quantity + parseInt(count);
+
+      // Check if the new quantity is greater than or equal to 1 before updating
+      if (newQuantity >= 1) {
+          cart.products[productIndex].quantity = newQuantity;
+      } else {
+          // Optionally handle the case where the quantity would go below 1 (e.g., show an error message)
+          return res.status(400).json({ error: "Quantity cannot be less than 1" });
+      }
+
+      // Saving the updated cart document
+      await cart.save();
+
+      return res.status(200).json({ message: "Quantity updated successfully" });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error while updating quantity" });
+  }
+});
+
+
 
 
 
@@ -216,6 +262,7 @@ const retrieveCartDetails = asyncHandler(async (req, res) => {
     getProductList,
     addToCart,
     fetchCartDetails,
-    retrieveCartDetails
+    retrieveCartDetails,
+    updateQuantity
 
   };
