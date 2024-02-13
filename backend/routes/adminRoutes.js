@@ -8,8 +8,6 @@ const router = express.Router();
 import { adminProtect } from '../middleware/adminAuthMiddleware.js';
 
 
-
-//Multer setup
 // Multer setup
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,6 +17,7 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
     },
 });
+
 const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
         cb(null, true);
@@ -31,7 +30,6 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
 });
-
 
 
 
