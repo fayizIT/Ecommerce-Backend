@@ -1,24 +1,23 @@
-const notFound = (req, res, next) => {
-    const error = new Error(`Not found - ${req.originalUrl}`);
-    res.status(404);
-    next(error);
-};
+import jwt from 'jsonwebtoken';
+import asyncHandler from 'express-async-handler';
+import User from '../models/userModel.js';
 
-const errorHandler = (err, req, res, next) => {
-    let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-    let message = err.message;
+const protect = asyncHandler(async(req,res,next)=>{
+    let token = req.cookies.jwt;
 
-    if (err.name === 'CastError' && err.kind === 'ObjectId') {
-        statusCode = 404;
-        message = 'Resource not found';
-    }
-
-    res.status(statusCode).json({
-        error: {
-            message: message,
-            stack: process.env.NODE_ENV === 'production' ? null : err.stack 
+    if(token){
+        try {
+            const decoded = jwt.verify(token,process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.userId).select('-password');
+            next();
+        } catch (error) {
+            res.status(401);
+            throw new Error('Not authorized, invalid token')
         }
-    });
-};
+    }else{
+        res.status(401);
+        throw new Error('Not authorized,Please Login')
+    }
+})
 
-export { notFound, errorHandler };
+export {protect}
