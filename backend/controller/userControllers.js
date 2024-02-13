@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import Product from "../models/productModel.js";
 
 
 
@@ -75,7 +76,7 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(200).json(user);
   });
 
-  
+
 
   const logoutUser = asyncHandler(async (req, res) => {
     res.cookie("jwt", "", {
@@ -85,10 +86,30 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "User logged out" });
   });
 
+
+
+
+  const getProductList = asyncHandler(async (req, res) => {
+    try {
+      const listedProducts = await Product.find({ unlist: false });
+      if (listedProducts && listedProducts.length > 0) {
+        res.status(200).json(listedProducts);
+      } else {
+        res.status(404).json({ error: "No products found" });
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+
+
   export { 
     registerUser,
     loginUser,
     getUserProfile,
-    logoutUser
+    logoutUser,
+    getProductList
 
   };
