@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import Product from "../models/productModel.js";
+import Cart from "../models/cartModel.js";
 
 
 
@@ -104,12 +105,57 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
 
+  const addingToCart = asyncHandler(async (req, res) => {
+    try {
+      const { productId } = req.body;
+  
+      const userId = req.user._id;
+  
+      // Check if the user has a cart
+      let cart = await Cart.findOne({ user_id: userId });
+  
+      // If the user doesn't have a cart, create a new one
+      if (!cart) {
+        cart = new Cart({
+          user_id: userId,
+          products: [{ productId, quantity: 1 }],
+        });
+  
+        await cart.save();
+        return res.status(201).json(cart);
+      }
+  
+      // If the user already has a cart, check if the product is already in the cart
+      const existingProduct = cart.products.find(
+        (product) => product.productId.toString() === productId
+      );
+  
+      if (existingProduct) {
+        // If the product is already in the cart, increase the quantity by one
+        existingProduct.quantity += 1;
+      } else {
+        // If the product is not in the cart, add it with a quantity of one
+        cart.products.push({ productId, quantity: 1 });
+      }
+  
+      await cart.save();
+      return res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+
+
+
 
   export { 
     registerUser,
     loginUser,
     getUserProfile,
     logoutUser,
-    getProductList
+    getProductList,
+    addingToCart
 
   };
