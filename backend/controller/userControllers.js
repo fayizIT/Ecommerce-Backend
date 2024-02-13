@@ -89,7 +89,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 
-
   const getProductList = asyncHandler(async (req, res) => {
     try {
       const listedProducts = await Product.find({ unlist: false });
@@ -103,6 +102,8 @@ const loginUser = asyncHandler(async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
+
+
 
 
   const addToCart = asyncHandler(async (req, res) => {
@@ -147,6 +148,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 
+
 const fetchCartDetails = asyncHandler(async (req, res) => {
   try {
       const userId = req.user._id;
@@ -175,6 +177,7 @@ const fetchCartDetails = asyncHandler(async (req, res) => {
 });
 
 
+
 const retrieveCartDetails = asyncHandler(async (req, res) => {
   try {
       const userId = req.user._id;
@@ -201,6 +204,7 @@ const retrieveCartDetails = asyncHandler(async (req, res) => {
       return res.status(500).json({ error: "Internal Server Error while retrieving cart details" });
   }
 });
+
 
 
 const updateQuantity = asyncHandler(async (req, res) => {
@@ -250,7 +254,28 @@ const updateQuantity = asyncHandler(async (req, res) => {
 
 
 
+const removeProductFromCart = asyncHandler(async (req, res) => {
+  try {
+      const { productId } = req.body;
+      const userId = req.user._id;
 
+      // Deleting product from the cart
+      const updatedCart = await Cart.findOneAndUpdate(
+          { user_id: userId },
+          { $pull: { products: { productId } } },
+          { new: true } // Return the updated document
+      );
+
+      if (!updatedCart) {
+          return res.status(404).json({ error: "Product not found in the cart" });
+      }
+
+      return res.status(200).json({ message: "Product removed from the cart" });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error while removing product" });
+  }
+});
 
 
 
@@ -263,6 +288,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
     addToCart,
     fetchCartDetails,
     retrieveCartDetails,
-    updateQuantity
+    updateQuantity,
+    removeProductFromCart
 
   };
