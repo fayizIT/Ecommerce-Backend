@@ -1,73 +1,84 @@
-import asyncHandler from 'express-async-handler';
-import Admin from '../models/adminModel.js';
+import asyncHandler from "express-async-handler";
+import Admin from "../models/adminModel.js";
 import Product from "../models/productModel.js";
 import generateTokenAdmin from "../utils/generateTokenAdmin.js";
 
-const generateAdminResponse = (res, admin) => {
-    generateTokenAdmin(res, admin._id);
-    res.status(201).json({
-        _id: admin._id,
-        name: admin.name,
-        email: admin.email,
-    });
-};
 
-// Admin  for login
-const loginAdmin = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+//Admin login
+const authAdmin = asyncHandler( async(req,res)=>{
+    const {email,password}= req.body;
 
-    const admin = await Admin.findOne({ email });
+    const admin = await Admin.findOne({email});
 
-    if (admin && (await admin.matchPaswword(password))) {
-        generateAdminResponse(res, admin);
-    } else {
+    if(admin && (await admin.matchPaswword(password))){
+        generateTokenAdmin(res,admin._id)
+        res.status(201).json({
+            _id:admin._id,
+            name:admin.name,
+            email:admin.email
+        })
+    }else{
         res.status(400);
-        throw new Error('Invalid email or password');
+        throw new Error('invalid email or password')
     }
+
+
 });
 
-// Register  for Admin
-const registerAdmin = asyncHandler(async (req, res) => {
-    const { name, email, password, key } = req.body;
 
-    const adminExist = await Admin.findOne({ email });
+//Register Admin
 
-    if (adminExist) {
+const registerAdmin = asyncHandler( async(req,res)=>{
+    const {name,email,password,key} = req.body
+
+    const adminExist = await Admin.findOne({email});
+
+    if(adminExist){
         res.status(400);
-        throw new Error('Admin already exists');
+        throw new Error('Admin already exisit')
     }
-
-    console.log(key, 'key');
-
-    if (key !== process.env.ADMIN_KEY) {
+    console.log(key,'keyyyyyyyyyy')
+    if(key!== process.env.ADMIN_KEY){
         res.status(401);
-        throw new Error('Invalid Key');
+        throw new Error('Invalid Key')
     }
 
     const admin = await Admin.create({
         name,
         email,
-        password,
-    });
+        password
+    })
 
-    if (admin) {
-        generateAdminResponse(res, admin);
-    } else {
+    
+
+    if(admin){
+        generateTokenAdmin(res,admin._id)
+        res.status(201).json({
+            _id:admin._id,
+            name:admin.name,
+            email:admin.email
+        })
+    }else{
         res.status(400);
-        throw new Error('Invalid admin data');
+        throw new Error('invalid admin data')
     }
+    
 });
 
-// Logout for Admin
-const logoutAdmin = asyncHandler(async (req, res) => {
-    res.cookie('adminJwt', '', {
-        httpOnly: true,
-        expires: new Date(0),
-    });
-    res.status(200).json({ message: 'Logged out' });
+
+// Loggin out admin
+
+const logoutAdmin = asyncHandler( async(req,res)=>{
+    res.cookie('adminJwt','',{
+        httpOnly:true,
+        expires:new Date(0)
+    })
+    res.status(200).json({message:"Logged out"})
 });
 
-//add product by Admin side
+
+// Adding product
+
 const addProduct = asyncHandler(async (req, res) => {
     const { name, category, description, price } = req.body;
     
@@ -101,7 +112,8 @@ const addProduct = asyncHandler(async (req, res) => {
       }
 });
 
-//unlist the current products by Admin side
+// Unlist Products
+
 const unlistProduct = asyncHandler(async (req, res) => {
     const productId = req.params.productId;
   
@@ -124,7 +136,8 @@ const unlistProduct = asyncHandler(async (req, res) => {
     }
 });
 
-//list the current products by Admin side
+
+// Listing Products
 const listProduct = asyncHandler(async (req, res) => {
     const productId = req.params.productId;
   
@@ -147,12 +160,12 @@ const listProduct = asyncHandler(async (req, res) => {
     }
 });
 
-// update the products details by Admin side
-const updateProduct = asyncHandler(async (req, res) => {
+// Editing product
+const editProduct = asyncHandler(async (req, res) => {
     
-    const { productId, name, category, description, price } = req.body;
+    const {productId, name, category, description, price } = req.body;
 
-    console.log(name, category, description, price, productId);
+    console.log(name,category,description,price,productId);
   
     // Check if productId is provided
     if (!productId) {
@@ -179,7 +192,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         existingProduct.image = req.file.filename;
       }
 
-      console.log(existingProduct, 'updated product');
+      console.log(existingProduct,'existing');
   
       // Save the updated product to the database
       const updatedProduct = await existingProduct.save();
@@ -188,28 +201,40 @@ const updateProduct = asyncHandler(async (req, res) => {
       res.status(200).json(updatedProduct);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error while updating product' });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-});
+  });
 
-
-const getAllProducts = asyncHandler(async (req, res) => {
+  const getAllProduct = asyncHandler(async (req, res) => {
     try {
-        const products = await Product.find({});
-        
-        if (products && products.length > 0) {
-            res.status(200).json(products);
-        } else {
-            // Change status code to 204 (No Content) when there are no products
-            res.status(204).json({ message: 'No products found' });
-        }
+      const products = await Product.find({});
+      
+      if (products && products.length > 0) {
+        res.status(200).json(products);
+      } else {
+        res.status(404).json({ error: 'No products found' });
+      }
     } catch (error) {
-        console.error('Error fetching products:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching products:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
-});
+  });
+  
+
+  
+    
+
+
+export {
+    authAdmin,
+    registerAdmin,
+    logoutAdmin,
+    addProduct,
+    unlistProduct,
+    listProduct,
+    editProduct,
+    getAllProduct
+}
 
 
 
-
-export { loginAdmin, registerAdmin, logoutAdmin, addProduct, unlistProduct, listProduct, updateProduct, getAllProducts };

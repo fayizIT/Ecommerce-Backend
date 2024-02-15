@@ -1,34 +1,33 @@
 import mongoose from "mongoose";
 
-// Define the product schema
 const productsSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
+    name:{
+        type:String,
+        require:true
     },
     category: {
+        type:String,
+        require:true
+      },
+    image:{
         type: String,
-        required: true
+         required: true
     },
-    image: {
-        type: String,
-        required: true
+    price:{
+        type:Number,
+        require:true
     },
-    price: {
-        type: Number,
-        required: true
+    description:{
+        type:String,
+        require:true
     },
-    description: {
-        type: String,
-        required: true
-    },
-    unlist: {
-        type: Boolean,
-        default: false
+    unlist : {
+        type:Boolean,
+        default:false
     }
-});
 
-// Create the Product model
-const Product = mongoose.model('Product', productsSchema);
+})
 
-export default Product;
+const Product = mongoose.model('Product',productsSchema)
+
+export default Product
