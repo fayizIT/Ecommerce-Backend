@@ -27,7 +27,7 @@ This E-commerce project is a demonstration of a mini e-commerce platform with di
 
 1. Clone the repository:
    ```bash
-  git clone  https://github.com/fayizIT/Demo-Ecommerce.git
+
 
    git clone frontend https://github.com/fayizIT/Ecommerce-frontend
    git clone backend https://github.com/fayizIT/Ecommerce-Backend
