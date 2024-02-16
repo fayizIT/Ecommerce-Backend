@@ -1,4 +1,4 @@
-# DEMO E-commerce Project
+#  E-commerce Project
 
 ## Overview
 
@@ -27,7 +27,10 @@ This E-commerce project is a demonstration of a mini e-commerce platform with di
 
 1. Clone the repository:
    ```bash
-   git clone 
+  git clone  https://github.com/fayizIT/Demo-Ecommerce.git
+
+   git clone frontend https://github.com/fayizIT/Ecommerce-frontend
+   git clone backend https://github.com/fayizIT/Ecommerce-Backend
    ```
 
 2. Navigate to the frontend directory and install dependencies:
@@ -51,7 +54,7 @@ This E-commerce project is a demonstration of a mini e-commerce platform with di
    npm start or npm run server
    ```
 
-5. Access the application at `http://localhost:3000` in your browser.
+5. Access the application at `http://localhost:3001` in your browser.
 
 ## Configuration
 
@@ -64,10 +67,3 @@ JWT_SECRET=abc123
 ADMIN_KEY= iamadmin
 ```
 
-## API Documentation
-
-For detailed API documentation for Admin, please refer to the https://documenter.getpostman.com/view/29225438/2s9Yyqj3ML
-
-For detailed API documentation for User, please refer to the https://documenter.getpostman.com/view/29225438/2s9Yyqj3MS
-
-Feel free to explore and contribute to the project! If you have any questions, please refer to the API documentation.
