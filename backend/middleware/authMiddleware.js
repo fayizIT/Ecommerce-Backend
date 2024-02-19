@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 
-const protect = asyncHandler(async(req,res,next)=>{
+const userprotect = asyncHandler(async(req,res,next)=>{
     let token = req.cookies.jwt;
 
     if(token){
@@ -20,4 +20,4 @@ const protect = asyncHandler(async(req,res,next)=>{
     }
 })
 
-export {protect}
+export {userprotect}
