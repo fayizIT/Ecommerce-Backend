@@ -1,7 +1,10 @@
 import express from 'express';
 const router = express.Router();
+import { authUser, registerUser, logoutUser, getUserProfile } from '../controller/userControllers.js';
+import { getListedProducts, addingToCart, getCartDetails, changingQuantity, deleteProductFromCart} from '../controller/userControllers.js';
 
-import { authUser, registerUser, logoutUser, getUserProfile, getListedProducts, addingToCart, getCartDetails, changingQuantity, deleteProductFromCart } from '../controller/userControllers.js';
+
+
 import { protect } from '../middleware/authMiddleware.js';
 
 router.post('/',registerUser)
