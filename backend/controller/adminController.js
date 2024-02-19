@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Admin from "../models/adminModel.js";
 import Product from "../models/productModel.js";
 import generateTokenAdmin from "../utils/generateTokenAdmin.js";
+import User from "../models/userModel.js";
 
 // Command Line for Admin Login: curl -X POST -H "Content-Type: application/json" -d '{"email": "admin@example.com", "password": "yourpassword"}' http://your-api-endpoint/authAdmin
 
@@ -204,6 +205,51 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Get all users
+const getAllUsers = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find({});
+
+    if (users && users.length > 0) {
+      res.status(200).json(users);
+    } else {
+      res.status(404).json({ error: "No users found" });
+    }
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Use deleteOne method to delete the user
+    await user.deleteOne();
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
+
+
+
+
+
 export {
   authAdmin,
   registerAdmin,
@@ -213,4 +259,6 @@ export {
   listProduct,
   editProduct,
   getAllProduct,
+  getAllUsers,
+  deleteUser
 };
