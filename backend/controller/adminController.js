@@ -222,6 +222,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
+
+//delete the user
 const deleteUser = asyncHandler(async (req, res) => {
   try {
     const userId = req.params.userId;
