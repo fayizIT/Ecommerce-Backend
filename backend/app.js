@@ -16,7 +16,7 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
+const __dirname = path.dirname(__filename);
 
 app.use(cors({
     origin:"*"
